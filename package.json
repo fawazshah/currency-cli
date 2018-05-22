@@ -1,0 +1,19 @@
+{
+  "name": "currency-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fawazshah/currency-cli.git"
+  },
+  "author": "Fawaz Shah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fawazshah/currency-cli/issues"
+  },
+  "homepage": "https://github.com/fawazshah/currency-cli#readme"
+}
