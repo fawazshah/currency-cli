@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/fawazshah/currency-cli/issues"
   },
-  "homepage": "https://github.com/fawazshah/currency-cli#readme"
+  "homepage": "https://github.com/fawazshah/currency-cli#readme",
+  "bin": {
+    "currency": "./index.js"
+  },
+  "dependencies": {
+    "commander": "^2.15.1"
+  }
 }
