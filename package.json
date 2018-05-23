@@ -1,7 +1,7 @@
 {
   "name": "currency-cli",
   "version": "1.0.0",
-  "description": "A set of tools for manipulating currencies.",
+  "description": "A command line tool for manipulating currency data.",
   "main": "currency.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
