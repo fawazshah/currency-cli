@@ -1,8 +1,8 @@
 {
   "name": "currency-cli",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A set of tools for manipulating currencies.",
+  "main": "currency.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/fawazshah/currency-cli#readme",
   "bin": {
-    "currency": "./index.js"
+    "currency": "./currency.js"
   },
   "dependencies": {
     "commander": "^2.15.1"
