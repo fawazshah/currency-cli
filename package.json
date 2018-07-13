@@ -20,6 +20,6 @@
     "currency": "./currency.js"
   },
   "dependencies": {
-    "commander": "^2.15.1"
+    "commander": "^2.16.0"
   }
 }
