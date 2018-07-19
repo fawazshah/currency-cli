@@ -20,6 +20,7 @@
     "currency": "./currency.js"
   },
   "dependencies": {
-    "commander": "^2.16.0"
+    "commander": "^2.16.0",
+    "node-fetch": "^2.1.2"
   }
 }

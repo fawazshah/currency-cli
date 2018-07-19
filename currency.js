@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 
 var commander = require('commander');
-var http      = require('http');
-var fs        = require("fs");
+var fetch     = require('node-fetch');
+
+/* Our latestUrl variable will give us access to the 'latest' endpoint,
+   containing the latest currency values. The other endpoint available for 
+   free is the 'historical' endpoint, showing currency data at a specific
+   date. */
 
 var accessKey = 'c8dc47fc727e256a4824b1885c7bd994';
 var latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
 
-/* only allow first argument if it is either -h or -v, or one of the 
-   preset commands */
+/* only allow first argument if it is either -h or -v, or one of the preset 
+   commands */
+
 var firstArg = process.argv[2];
 if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
    || firstArg == '-h' || firstArg == '--help'
@@ -17,10 +22,10 @@ if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
   process.exit(1);
 }
  
-/* Each command-line command is set up individually (using 
-   the Commander API). The help manual (accessed via -h and --help) 
-   is set up automatically by Commander. We use standard processing
-   of command-line arguments to deal with initial errors. */
+/* Each command-line command is set up individually (using the Commander API).
+   The help manual (accessed via -h and --help) is set up automatically by 
+   Commander. We use standard processing of command-line arguments to deal 
+   with initial errors. */
 
 commander
   .version('currency-cli version 0.1.0', '-v, --version');
@@ -29,26 +34,25 @@ commander
   .command('seeall')
   .description('see all currencies and their 3 letter codes')
   .action(function() {
+
+    /* We use node-fetch, a Node.js module that uses the JavaScript Fetch API,
+       to access JSON data from the given fixer.io URL. We want the latest 
+       currency values, so we fetch from latestUrl. */
  
-    http.get(latestUrl, function(res) {
-      const { statusCode } = res;
-      let rawData = '';
-      res.on('data', (chunk) => { rawData += chunk; });
-      res.on('end', () => {
-        try {
-
-          var json = JSON.parse(rawData);
-          console.log('List of all valid currencies: ');
-          for (var key in json.rates) {
-            console.log(key);
-          }
-
-        } catch (e) {
-          console.error(e.message);
+    fetch(latestUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        if (json.success == false) {
+          console.error(json.error);
           process.exit(1);
         }
+        console.log('List of all valid currencies: ');
+        for (var key in json.rates) {
+          console.log(key);
+        }
       });
-    });
 
   });
   
@@ -62,36 +66,33 @@ commander
       process.exit(1);
     }
 
-    http.get(latestUrl, function(res) {
-      const { statusCode } = res;
-      let rawData = '';
-      res.on('data', (chunk) => { rawData += chunk; });
-      res.on('end', () => {
-        try {
+    /* Again, we want the latest currency values, so we use latestUrl. */
 
-          var json = JSON.parse(rawData);
-          var isInRates = false;
-          for (var key in json.rates) {
-            if (key == currency) {
-              isInRates = true;
-            }
+    fetch(latestUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        if (json.success == false) {
+          console.error(json.error);
+          process.exit(1);
+        }
+        var currencyIsInRates = false;
+        for (var key in json.rates) {
+          if (key == currency) {
+            currencyIsInRates = true;
           }
-          if (isInRates) {
-            var relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
-            console.log(relativeToUsd);
-          } else {
-            console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form e.g. USD, GBP");
-            process.exit(1);
-          }
-
-        } catch (e) {
-          console.error(e.message);
+        }
+        if (currencyIsInRates) {
+          var relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
+          console.log(relativeToUsd);
+        } else {
+          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form e.g. USD, GBP");
           process.exit(1);
         }
       });
-    });
 
-  });
+    });
 
 commander
   .command('convert [amount] [currency1] [currency2]')
@@ -103,19 +104,40 @@ commander
       process.exit(1);
     }
 
-    if (typeof amount != "number") {
+    if (isNaN(parseInt(amount))) {
       console.error("'amount' must be a number!");
       process.exit(1);
     }
 
-    // TODO: check input currencies belong to list of valid currencies
-
     /* 'convert' endpoint type is not available for free, so we calculate 
-       conversion with the 'latest' endpoint */
-    var json = getJsonFromUrl(latestUrl);
+       conversion with the 'latest' endpoint (i.e. latestUrl). */
 
-    console.log(currency1);
-    console.log(currency2);
+    fetch(latestUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        if (json.success == false) {
+          console.error(json.error);
+          process.exit(1);
+        }
+        var currency1IsInRates = false, currency2IsInRates = false;
+        for (var key in json.rates) {
+          if (key == currency1) {
+            currency1IsInRates = true;
+          }
+          if (key == currency2) {
+            currency2IsInRates = true;
+          }
+        }
+        if (currency1IsInRates && currency2IsInRates) {
+          var ratio = amount / json.rates[currency1] * json.rates[currency2];
+          console.log(ratio);
+        } else {
+          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
+          process.exit(1);
+        }
+      });
 
   });
 
