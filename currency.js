@@ -10,7 +10,7 @@ var latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
 /* only allow first argument if it is either -h or -v, or one of the 
    preset commands */
 var firstArg = process.argv[2];
-if (!(firstArg == 'latest' || firstArg == 'convert'
+if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
    || firstArg == '-h' || firstArg == '--help'
    || firstArg == '-v' || firstArg == '--version')) {
   console.error('No valid command supplied! See help menu (\'currency -h\')');
@@ -28,9 +28,30 @@ commander
 commander
   .command('seeall')
   .description('see all currencies and their 3 letter codes')
-  
-  //TODO: implement 'seeall' command
+  .action(function() {
+ 
+    http.get(latestUrl, function(res) {
+      const { statusCode } = res;
+      let rawData = '';
+      res.on('data', (chunk) => { rawData += chunk; });
+      res.on('end', () => {
+        try {
 
+          var json = JSON.parse(rawData);
+          console.log('List of all valid currencies: ');
+          for (var key in json.rates) {
+            console.log(key);
+          }
+
+        } catch (e) {
+          console.error(e.message);
+          process.exit(1);
+        }
+      });
+    });
+
+  });
+  
 commander
   .command('latest [currency]')
   .description('get the latest value of the currency (with respect to USD)')
@@ -69,6 +90,7 @@ commander
         }
       });
     });
+
   });
 
 commander
