@@ -1,6 +1,6 @@
 # Currency Command Line Interface
 
-A command line tool for manipulating currency data. Receives currency data using [Fixer](fixer.io) API.
+A command line tool for currency conversion. Receives currency data using [Fixer](fixer.io) API.
 
 ## Usage
 
