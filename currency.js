@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-var commander = require('commander');
-var fetch     = require('node-fetch');
+const commander = require('commander');
+const fetch     = require('node-fetch');
 
 /* Our latestUrl variable will give us access to the 'latest' endpoint,
    containing the latest currency values. The other endpoint available for 
    free is the 'historical' endpoint, showing currency data at a specific
    date. */
 
-var accessKey = 'c8dc47fc727e256a4824b1885c7bd994';
-var latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
+const accessKey = 'c8dc47fc727e256a4824b1885c7bd994';
+const latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
 
 /* only allow first argument if it is either -h or -v, or one of the preset 
    commands */
 
-var firstArg = process.argv[2];
+const firstArg = process.argv[2];
 if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
    || firstArg == '-h' || firstArg == '--help'
    || firstArg == '-v' || firstArg == '--version')) {
@@ -84,7 +84,7 @@ commander
           }
         }
         if (currencyIsInRates) {
-          var relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
+          const relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
           console.log(relativeToUsd);
         } else {
           console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form e.g. USD, GBP");
@@ -131,7 +131,7 @@ commander
           }
         }
         if (currency1IsInRates && currency2IsInRates) {
-          var ratio = amount / json.rates[currency1] * json.rates[currency2];
+          const ratio = amount / json.rates[currency1] * json.rates[currency2];
           console.log(ratio);
         } else {
           console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
