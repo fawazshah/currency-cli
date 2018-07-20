@@ -21,3 +21,5 @@ All currencies must be input as their 3 letter code (e.g. USD, GBP).
 `currency latest [currency]` - get the latest value of [currency] (with respect to USD).
 
 `currency [amount] [currency1] [currency2]` - convert [amount] of [currency1] to [currency2].
+
+`currency historical [date] [currency]` get the value of [currency] (with respect to USD) at the given [date].
