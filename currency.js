@@ -15,7 +15,8 @@ const latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
    commands */
 
 const firstArg = process.argv[2];
-if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
+if (!(firstArg == 'latest' || firstArg == 'convert'
+   || firstArg == 'seeall' || firstArg == 'historical'
    || firstArg == '-h' || firstArg == '--help'
    || firstArg == '-v' || firstArg == '--version')) {
   console.error('No valid command supplied! See help menu (\'currency -h\')');
@@ -153,6 +154,56 @@ commander
 commander
   .command('historical [date] [currency]')
   .description('get the value of the currency (with respect to USD) at a particular date') 
+  .action(function(date, currency) {
+
+    if (!date || !currency) {
+      console.error('A date and a currency not supplied!');
+      process.exit(1);
+    }
+
+    /* checking the date is in the correct format */
+
+    var dateAsList = date.split('-');
+    if (!(dateAsList.length == 3 &&
+          dateAsList[0].length == 4 &&
+          dateAsList[1].length == 2 &&
+          dateAsList[2].length == 2 &&
+          !isNaN(parseInt(dateAsList[0])) &&
+          !isNaN(parseInt(dateAsList[1])) &&
+          !isNaN(parseInt(dateAsList[2])))) {
+      console.error('Not a valid date!');
+      process.exit(1);
+    }
+
+    /* This command uses the 'historical' endpoint, so we create our historicalUrl. */
+
+    const historicalUrl = 'http://data.fixer.io/api/' + date + '?access_key=' + accessKey;
+
+    fetch(historicalUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        if (json.success == false) {
+          console.error(json.error);
+          process.exit(1);
+        }
+        var currencyIsInRates = false;
+        for (var key in json.rates) {
+          if (key == currency) {
+            currencyIsInRates = true;
+          }
+        }
+        if (currencyIsInRates) {
+          const relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
+          console.log(relativeToUsd);
+        } else {
+          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
+          process.exit(1);
+        }
+      });
+
+    });
 
 commander
   .parse(process.argv);
