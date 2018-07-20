@@ -30,6 +30,15 @@ if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
 commander
   .version('currency-cli version 0.1.0', '-v, --version');
 
+commander.on('--help', function(){
+  console.log('');
+  console.log('  Note:');
+  console.log('');
+  console.log('    All currencies must be given as their 3 letter codes.');
+  console.log('    All dates must be given in the form \'YYYY-MM-DD\'.');
+  console.log('');
+});
+
 commander
   .command('seeall')
   .description('see all currencies and their 3 letter codes')
@@ -87,7 +96,7 @@ commander
           const relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
           console.log(relativeToUsd);
         } else {
-          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form e.g. USD, GBP");
+          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
           process.exit(1);
         }
       });
@@ -140,6 +149,10 @@ commander
       });
 
   });
+
+commander
+  .command('historical [date] [currency]')
+  .description('get the value of the currency (with respect to USD) at a particular date') 
 
 commander
   .parse(process.argv);
