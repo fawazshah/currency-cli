@@ -42,7 +42,7 @@ commander.on('--help', function(){
 
 commander
   .command('seeall')
-  .description('see all currencies and their 3 letter codes')
+  .description('see all available currencies and their 3 letter codes')
   .action(function() {
 
     /* We use node-fetch, a Node.js module that uses the JavaScript Fetch API,
@@ -153,7 +153,7 @@ commander
 
 commander
   .command('historical [date] [currency]')
-  .description('get the value of the currency (with respect to USD) at a particular date') 
+  .description('get the value of the currency (with respect to USD) at the given date') 
   .action(function(date, currency) {
 
     if (!date || !currency) {
@@ -207,7 +207,7 @@ commander
 
 commander
   .command('historicalconvert [date] [amount] [currency1] [currency2]')
-  .description('converts amount of currency1 into currency2, using currency values at a particular date')
+  .description('convert amount of currency1 into currency2, using currency values at the given date')
   .action(function(date, amount, currency1, currency2) {
 
     if (!date || !amount || !currency1 || !currency2) {
