@@ -23,3 +23,5 @@ All currencies must be input as their 3 letter code (e.g. USD, GBP).
 `currency convert [amount] [currency1] [currency2]` - convert [amount] of [currency1] to [currency2].
 
 `currency historical [date] [currency]` get the value of [currency] (with respect to USD) at the given [date].
+
+`currency historicalconvert [date] [amount] [currency1] [currency2]` - convert [amount] of [currency1] to [currency2], using currency values at the given [date].
