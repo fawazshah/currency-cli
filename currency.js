@@ -15,8 +15,8 @@ const latestUrl = 'http://data.fixer.io/api/latest?access_key=' + accessKey;
    commands */
 
 const firstArg = process.argv[2];
-if (!(firstArg == 'latest' || firstArg == 'convert'
-   || firstArg == 'seeall' || firstArg == 'historical'
+if (!(firstArg == 'latest' || firstArg == 'convert' || firstArg == 'seeall'
+   || firstArg == 'historical' || firstArg == 'historicalconvert'
    || firstArg == '-h' || firstArg == '--help'
    || firstArg == '-v' || firstArg == '--version')) {
   console.error('No valid command supplied! See help menu (\'currency -h\')');
@@ -197,6 +197,68 @@ commander
         if (currencyIsInRates) {
           const relativeToUsd = 1 / json.rates[currency] * json.rates.USD;
           console.log(relativeToUsd);
+        } else {
+          console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
+          process.exit(1);
+        }
+      });
+
+    });
+
+commander
+  .command('historicalconvert [date] [amount] [currency1] [currency2]')
+  .description('converts amount of currency1 into currency2, using currency values at a particular date')
+  .action(function(date, amount, currency1, currency2) {
+
+    if (!date || !amount || !currency1 || !currency2) {
+      console.error('Two currencies, a date and an amount not supplied!');
+      process.exit(1);
+    }
+
+    if (isNaN(parseInt(amount))) {
+      console.error("'amount' must be a number!");
+      process.exit(1);
+    }
+
+    /* checking the date is in the correct format */
+
+    var dateAsList = date.split('-');
+    if (!(dateAsList.length == 3 &&
+          dateAsList[0].length == 4 &&
+          dateAsList[1].length == 2 &&
+          dateAsList[2].length == 2 &&
+          !isNaN(parseInt(dateAsList[0])) &&
+          !isNaN(parseInt(dateAsList[1])) &&
+          !isNaN(parseInt(dateAsList[2])))) {
+      console.error('Not a valid date!');
+      process.exit(1);
+    }
+
+    /* This command uses the 'historical' endpoint, so we create our historicalUrl. */
+
+    const historicalUrl = 'http://data.fixer.io/api/' + date + '?access_key=' + accessKey;
+
+    fetch(historicalUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(json) {
+        if (json.success == false) {
+          console.error(json.error);
+          process.exit(1);
+        }
+        var currency1IsInRates = false, currency2IsInRates = false;
+        for (var key in json.rates) {
+          if (key == currency1) {
+            currency1IsInRates = true;
+          }
+          if (key == currency2) {
+            currency2IsInRates = true;
+          }
+        }
+        if (currency1IsInRates && currency2IsInRates) {
+          const ratio = amount / json.rates[currency1] * json.rates[currency2];
+          console.log(ratio);
         } else {
           console.error("Not a valid currency! Currency must be supplied in its 3 letter all-caps form (e.g. USD, GBP)");
           process.exit(1);
